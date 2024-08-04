@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Main content styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Background video styling */
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the entire screen */
+            z-index: -100; /* Place it behind other content */
+        }
+
+        .content {
+            padding: 50px 20px;
+            background-color: rgba(255, 255, 255, 0); /* Transparent background */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 100px;
+            margin: 500px auto;
+            max-width: 600px;
+            font-weight: bold; /* Make the text bold */
+            position: relative; /* Ensure it stays above the video */
+            z-index: 1000; /* Ensure it stays above the video */
+        }
+
+        h1 {
+            color: #b32f2a; /* Heart disease awareness color */
+        }
+
+        p {
+            color: #f7f2f2; /* Set paragraph text color to white */
+            font-size: 18px; /* Increase font size */
+            font-weight: bold; /* Make the text bold */
+        }
+
+        /* Navigation bar styling */
+        .navbar {
+            overflow: hidden;
+            background-color: transparent; /* Make the navbar background transparent */
+            position:absolute;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #5A72A0; /* Set text color to white */
+            font-weight: bold; /* Make the text bold */
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: black;
+            color: #481E14;
+        }
+
+        .navbar a.active {
+            background-color: #561C24; /* Change active background to black */
+            color: black;
+        }
+
+        .navbar-right {
+            margin-left: auto; /* Aligns the right links to the right */
+        }
+
+        .navbar img {
+            height: 40px; /* Adjust the height as needed */
+            margin-right: 20px; /* Space between the logo and the links */
+        }
+
+        /* Chatbot UI */
+        .chatbot-container {
+            display: none; /* Initially hide the chatbot */
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 500px;
+            height: 500px;
+            border: 1px solid #ccc;
+            background-color: #e5ddd5;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .chatbot-header {
+            background-color: rgb(91, 14, 14);
+            color: #fff;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chatbot-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .chatbot-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .chatbot-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid rgb(69, 27, 74);
+        }
+
+        /* Chatbot Icon */
+        .chatbot-icon-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: center;
+            z-index: 1001;
+        }
+
+        .chatbot-icon {
+            font-size: 48px;
+            color: rgba(138, 28, 28, 0.529); /* Set icon color to red */
+            padding: 15px;
+            border: 3px solid rgb(91, 14, 14); /* Adjust border color to match the icon */
+            border-radius: 50%;
+            background-color: #e5ddd5;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .chatbot-icon:hover {
+            background-color: #4f0d17; /* Change background on hover */
+            color: #543455;
+        }
+
+        /* Adjust content to accommodate the fixed navbar */
+        .content {
+            margin-top: 10px; /* Add top margin to avoid overlap with the navbar */
+        }
+
+        section {
+            padding: 100px 20px; /* Adjust padding for spacing */
+            min-height: 100vh; /* Ensure each section covers the full viewport height */
+            background-color: rgba(255, 255, 255, 0);
+            display:none; /* Hide all sections by default */
+            padding: 100px 20px;
+            min-height: 100vh; /* Ensure each section covers the full viewport height */
+        }
+
+        #home {
+            display: block; /* Show the home section by default */
+            background-color: rgba(255, 255, 255, 0); /* Transparent background */
+        }
+
+        #about, #services, #contact {
+            margin: 50px 20px; /* Adjust margin to start from the left and add space from top */
+            padding: 20px; /* Add padding for spacing */
+            text-align: left; 
+            background-color: black;
+            color: #421c3c;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Video -->
+    <video autoplay muted loop class="background-video">
+        <source src="C:\Users\G Varsha\Downloads\Find your Heartbeat within the SandBoxx Community.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#home">
+            <img src="C:\Users\G Varsha\Desktop\heart logo.jpeg" alt="Logo">
+        </a>
+        <a href="javascript:void(0);" onclick="showSection('home')" class="active">Home</a>
+        <a href="javascript:void(0);" onclick="showSection('about')">About</a>
+        <a href="javascript:void(0);" onclick="showSection('services')">Services</a>
+        <a href="javascript:void(0);" onclick="showSection('contact')">Contact</a>
+        <div class="navbar-right">
+            <!-- <a href="#login">Login</a>
+            <a href="#signup">Sign Up</a> -->
+        </div>
+    </div>
+
+    <section id="home">
+        <div class="content">
+            <h1>Heart Disease Prediction</h1>
+            <p>Welcome to our heart disease prediction tool. Use the chatbot for personalized advice based on your health data.</p>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="content">
+            <h1>About Us</h1>
+            <p>
+                Welcome to our Heart Disease Prediction tool. We are dedicated to helping individuals monitor and manage their heart health through advanced technology and data analysis. Our mission is to provide accessible, reliable, and personalized heart health insights to empower you in making informed decisions about your health.
+            </p>
+            <p>
+                Our team is composed of healthcare professionals, data scientists, and software engineers who are passionate about leveraging technology to improve health outcomes. We have developed a sophisticated prediction model that analyzes your health data to assess your risk of heart disease. This tool is designed to be user-friendly, ensuring that you can easily input your information and receive accurate results.
+            </p>
+            <p>
+                Why Choose Us?
+            </p>
+            <ul>
+                <li>
+                    <strong>Accuracy:</strong> Our prediction model is based on extensive research and is continuously updated to ensure accuracy.
+                </li>
+                <li>
+                    <strong>Personalization:</strong> We provide personalized insights based on your unique health data.
+                </li>
+                <li>
+                    <strong>Privacy:</strong> Your data is securely stored and is used solely for the purpose of providing you with health insights.
+                </li>
+                <li>
+                    <strong>Support:</strong> Our team is available to answer your questions and provide support as needed.
+                </li>
+            </ul>
+            <p>
+                We believe that knowledge is power, and we are committed to empowering you with the information you need to take control of your heart health. Thank you for trusting us as your partner in heart health.
+            </p>
+        </div>
+    </section>
+    
+
+    <section id="services">
+        <h1>Our Services</h1>
+        <div class="service">
+            <h2>Risk Assessment</h2>
+            <p>Comprehensive evaluation of your risk factors for heart disease based on health data and lifestyle choices. Get a clear understanding of your health risks.</p>
+        </div>
+        <div class="service">
+            <h2>Personalized Health Insights</h2>
+            <p>Receive personalized reports with insights into your heart health and tailored recommendations for improvement based on your data.</p>
+        </div>
+        <div class="service">
+            <h2>Symptom Checker</h2>
+            <p>Identify potential heart-related symptoms and know when to seek medical attention with our intuitive symptom checker tool.</p>
+        </div>
+        <div class="service">
+            <h2>Lifestyle Coaching</h2>
+            <p>Get expert advice on diet, exercise, and lifestyle changes to improve your heart health. Enjoy customized meal plans and exercise routines.</p>
+        </div>
+        <div class="service">
+            <h2>Medication Management</h2>
+            <p>Receive reminders and information about medications to help you manage your heart health effectively.</p>
+        </div>
+        <div class="service">
+            <h2>Telehealth Consultations</h2>
+            <p>Access healthcare professionals for virtual consultations regarding heart health concerns and personalized advice.</p>
+        </div>
+        <div class="service">
+            <h2>Monitoring Tools</h2>
+            <p>Integrate with wearable devices to track heart rate, activity levels, and vital signs, providing real-time data for better health management.</p>
+        </div>
+        <div class="service">
+            <h2>Educational Resources</h2>
+            <p>Explore articles, videos, and infographics about heart disease, prevention strategies, and the latest research in cardiology.</p>
+        </div>
+        <div class="service">
+            <h2>Emergency Response Protocol</h2>
+            <p>Learn how to respond in a cardiac emergency, including CPR guidelines and when to call emergency services.</p>
+        </div>
+        <div class="service">
+            <h2>Community Support Groups</h2>
+            <p>Connect with local or online support groups for individuals dealing with heart disease or related health issues.</p>
+        </div>
+        <div class="service">
+            <h2>Data Privacy and Security Services</h2>
+            <p>We ensure your health data is handled securely and privately, with options for you to control what information is shared.</p>
+        </div>
+        <div class="service">
+            <h2>Health Tracking and Reminders</h2>
+            <p>Track your blood pressure, cholesterol levels, and other health metrics, along with reminders for regular check-ups.</p>
+        </div>
+        <div class="service">
+            <h2>Family Health History Evaluation</h2>
+            <p>Understand your family health history and how it relates to your risk of heart disease with our evaluation service.</p>
+        </div>
+        <div class="service">
+            <h2>Nutritional Counseling</h2>
+            <p>Consult with registered dietitians or nutritionists who provide tailored dietary advice to reduce heart disease risk.</p>
+        </div>
+        <div class="service">
+            <h2>Follow-up Services</h2>
+            <p>Regular follow-up assessments to track your progress and adjust recommendations as needed to ensure optimal heart health.</p>
+        </div>
+    </section>
+    
+
+    <section id="contact">
+        <h1>Contact Us</h1>
+        <p>If you have any questions or need assistance, feel free to reach out to us. Below are some of the best heart surgeons and hospitals for your heart health needs.</p>
+    
+        <h2>Best Heart Surgeons</h2>
+        <div class="surgeon">
+            <h3>Dr. John Smith</h3>
+            <p>Cardiothoracic Surgeon</p>
+            <p>Hospital: Heart Care Hospital</p>
+            <p>Phone: +1 (555) 123-4567</p>
+            <p>Email: john.smith@heartcarehospital.com</p>
+        </div>
+        <div class="surgeon">
+            <h3>Dr. Emily Johnson</h3>
+            <p>Cardiovascular Surgeon</p>
+            <p>Hospital: Cardiac Institute</p>
+            <p>Phone: +1 (555) 987-6543</p>
+            <p>Email: emily.johnson@cardiacinstitute.com</p>
+        </div>
+        <div class="surgeon">
+            <h3>Dr. Michael Brown</h3>
+            <p>Heart Surgeon</p>
+            <p>Hospital: Heart Health Center</p>
+            <p>Phone: +1 (555) 654-3210</p>
+            <p>Email: michael.brown@hearthealthcenter.com</p>
+        </div>
+    
+        <h2>Recommended Hospitals</h2>
+        <div class="hospital">
+            <h3>Heart Care Hospital</h3>
+            <p>Address: 123 Heart Lane, Cityville, ST 12345</p>
+            <p>Phone: +1 (555) 111-2222</p>
+            <p>Website: <a href="https://www.heartcarehospital.com">www.heartcarehospital.com</a></p>
+        </div>
+        <div class="hospital">
+            <h3>Cardiac Institute</h3>
+            <p>Address: 456 Cardiac Rd, Townsville, ST 67890</p>
+            <p>Phone: +1 (555) 333-4444</p>
+            <p>Website: <a href="https://www.cardiacinstitute.com">www.cardiacinstitute.com</a></p>
+        </div>
+        <div class="hospital">
+            <h3>Heart Health Center</h3>
+            <p>Address: 789 Health St, Village City, ST 54321</p>
+            <p>Phone: +1 (555) 555-6666</p>
+            <p>Website: <a href="https://www.hearthealthcenter.com">www.hearthealthcenter.com</a></p>
+        </div>
+    
+        <h2>Get in Touch</h2>
+        <p>If you have any questions or need further information, please contact us:</p>
+        <p>Email: <a href="mailto:info@heartdiseaseprediction.com">info@heartdiseaseprediction.com</a></p>
+        <p>Phone: +1 (555) 777-8888</p>
+    </section>
+    
+
+    <!-- Chatbot UI -->
+    <div id="chatbot-container" class="chatbot-container">
+        <div class="chatbot-header">
+            Chatbot
+            <span class="chatbot-close" id="chatbot-close">&times;</span>
+        </div>
+        <div id="chatbot-body" class="chatbot-body">
+            <iframe src="https://heart-python.onrender.com" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- Chatbot Icon -->
+    <div class="chatbot-icon-container">
+        <a href="javascript:void(0);" id="chatbot-icon" class="chatbot-icon" aria-label="Chatbot">
+            <i class="fas fa-heartbeat"></i>
+        </a>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('section').forEach(function(section) {
+                section.style.display = 'none';
+            });
+
+            // Remove active class from all navbar links
+            document.querySelectorAll('.navbar a').forEach(function(link) {
+                link.classList.remove('active');
+            });
+
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Add active class to the clicked navbar link
+            document.querySelector('.navbar a[href="javascript:void(0);" onclick="showSection(\'' + sectionId + '\')"]').classList.add('active');
+        }
+
+        // Handle opening and closing of the chatbot
+        document.getElementById('chatbot-icon').addEventListener('click', function () {
+            document.getElementById('chatbot-container').style.display = 'flex';
+        });
+
+        document.getElementById('chatbot-close').addEventListener('click', function () {
+            document.getElementById('chatbot-container').style.display = 'none';
+        });
+
+        // Show the home section by default on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('home');
+        });
+    </script>
+</body>
+</html>
